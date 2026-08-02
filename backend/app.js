@@ -283,6 +283,14 @@ app.use((req, res) => {
     res.status(404).send("Page Not Found");
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server Running On http://localhost:${PORT}`);
-});
+// ==========================================
+// LOCAL SERVER
+// ==========================================
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server Running On http://localhost:${PORT}`);
+    });
+}
+
+// Vercel serverless export
+module.exports = app;

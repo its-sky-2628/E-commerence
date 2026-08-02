@@ -164,7 +164,7 @@ function Navbar() {
       <div className="nav-btn">
         <a
           className="login-btn"
-          href="http://localhost:5001/login"
+          href="/login"
         >
           <LogIn size={17} />
           Admin

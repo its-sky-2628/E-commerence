@@ -92,6 +92,12 @@ function Navbar() {
             : "nav-links"
         }
       >
+        <li className="mobile-admin-link">
+  <a href="/login">
+    <LogIn size={18} />
+    Login
+  </a>
+</li>
         <li>
           <Link
             className={

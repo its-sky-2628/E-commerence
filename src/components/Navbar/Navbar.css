@@ -172,6 +172,17 @@
   cursor: pointer;
 }
 
+
+/* =========================================
+   MOBILE ADMIN
+   Desktop par hidden rahega
+========================================= */
+
+.mobile-admin-link {
+  display: none;
+}
+
+
 @media (max-width: 1050px) {
   .nav-links {
     gap: 18px;
@@ -182,6 +193,7 @@
     min-width: auto;
   }
 }
+
 
 @media (max-width: 850px) {
   .navbar,
@@ -195,6 +207,7 @@
     height: 43px;
   }
 
+  /* Desktop buttons mobile par hide */
   .nav-btn {
     display: none;
   }
@@ -243,10 +256,45 @@
     font-size: 14px;
   }
 
+
+  /* =========================================
+     ADMIN LOGIN - MOBILE ONLY
+  ========================================= */
+
+  .mobile-admin-link {
+    display: block;
+
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+
+    border-bottom: 1px solid #eee;
+  }
+
+  .mobile-admin-link a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 13px 10px;
+
+    color: #b88932;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+  }
+
+  .mobile-admin-link a:hover {
+    color: #111;
+  }
+
+
   .nav-links a.current::after {
     display: none;
   }
 }
+
 
 @media (max-width: 420px) {
   .logo h2 {

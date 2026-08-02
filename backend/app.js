@@ -5,6 +5,8 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
+const bcrypt = require("bcrypt");
+const Customer = require("./models/Customer");
 
 const connectDB = require("./config/db");
 const Product = require("./models/Product");
@@ -75,6 +77,85 @@ app.get("/", async (req, res) => {
 // ==========================================
 // LOGIN & LOGOUT
 // ==========================================
+// ==========================================
+// CUSTOMER REGISTRATION
+// ==========================================
+app.post("/customer/register", async (req, res) => {
+    try {
+        const {
+            username,
+            mobile,
+            age,
+            gender,
+            email,
+            password
+        } = req.body;
+
+        if (
+            !username ||
+            !mobile ||
+            !age ||
+            !gender ||
+            !email ||
+            !password
+        ) {
+            return res
+                .status(400)
+                .send("Please fill all fields");
+        }
+
+        const normalizedEmail =
+            email.toLowerCase().trim();
+
+        const existingCustomer =
+            await Customer.findOne({
+                email: normalizedEmail
+            });
+
+        if (existingCustomer) {
+            return res
+                .status(409)
+                .send("Email already registered");
+        }
+
+        const hashedPassword =
+            await bcrypt.hash(password, 10);
+
+        await Customer.create({
+            username,
+            mobile,
+            age: Number(age),
+            gender,
+            email: normalizedEmail,
+            password: hashedPassword
+        });
+
+        const token = jwt.sign(
+            {
+                email: normalizedEmail,
+                role: "customer"
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.cookie("customerToken", token, {
+            httpOnly: true,
+            sameSite: "lax"
+        });
+
+        return res.redirect("/");
+    } catch (error) {
+        console.error(
+            "Customer Registration Error:",
+            error
+        );
+
+        return res
+            .status(500)
+            .send("Unable to register customer");
+    }
+});
 app.get("/login", (req, res) => {
     res.render("login");
 });
@@ -101,6 +182,74 @@ app.post("/login", (req, res) => {
     }
 
     return res.status(401).send("Invalid Email or Password");
+});
+
+
+// ==========================================
+// CUSTOMER LOGIN
+// ==========================================
+app.post("/customer/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res
+                .status(400)
+                .send("Email and password are required");
+        }
+
+        const normalizedEmail =
+            email.toLowerCase().trim();
+
+        const customer =
+            await Customer.findOne({
+                email: normalizedEmail
+            });
+
+        if (!customer) {
+            return res
+                .status(401)
+                .send("Invalid Email or Password");
+        }
+
+        const passwordMatch =
+            await bcrypt.compare(
+                password,
+                customer.password
+            );
+
+        if (!passwordMatch) {
+            return res
+                .status(401)
+                .send("Invalid Email or Password");
+        }
+
+        const token = jwt.sign(
+            {
+                id: customer._id,
+                email: customer.email,
+                role: "customer"
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.cookie("customerToken", token, {
+            httpOnly: true,
+            sameSite: "lax"
+        });
+
+        return res.redirect("/");
+    } catch (error) {
+        console.error(
+            "Customer Login Error:",
+            error
+        );
+
+        return res
+            .status(500)
+            .send("Unable to login");
+    }
 });
 
 app.get("/logout", (req, res) => {

@@ -1,6 +1,8 @@
 const Product = require("../models/Product");
 const fs = require("fs");
 const path = require("path");
+const uploadToCloudinary = require("../utils/cloudinaryUpload");
+const deleteFromCloudinary = require("../utils/cloudinaryDelete");
 
 // ==========================================
 // GET ALL PRODUCTS
@@ -73,17 +75,26 @@ const getSingleProduct = async (req, res) => {
 // ==========================================
 const addProduct = async (req, res) => {
     try {
+        // ==================================
+        // UPLOAD IMAGES TO CLOUDINARY
+        // ==================================
+        const images = [];
 
-        // Uploaded images
-        const images = req.files
-            ? req.files.map(
-                file => file.filename
-            )
-            : [];
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                const uploaded =
+                    await uploadToCloudinary(
+                        file.buffer
+                    );
 
-        // Create product
+                images.push(uploaded.url);
+            }
+        }
+
+        // ==================================
+        // CREATE PRODUCT
+        // ==================================
         const product = await Product.create({
-
             name: req.body.name,
 
             price:
@@ -100,22 +111,15 @@ const addProduct = async (req, res) => {
 
             images,
 
-            // ==================================
-            // HERO SLIDER
-            // ==================================
-
-            // Checkbox checked = true
             highlighted:
                 req.body.highlighted === "on" ||
                 req.body.highlighted === "true",
 
-            // Slider position
             sliderOrder:
                 Number(req.body.sliderOrder) || 0
         });
 
-
-        // Admin form se add hua
+        // Admin form
         if (
             req.originalUrl.startsWith(
                 "/admin/"
@@ -126,26 +130,22 @@ const addProduct = async (req, res) => {
             );
         }
 
-
-        // API se add hua
-        res.status(201).json({
+        // API
+        return res.status(201).json({
             success: true,
-            message:
-                "Product added successfully",
+            message: "Product added successfully",
             product
         });
 
     } catch (error) {
-
         console.error(
             "Add Product Error:",
             error
         );
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message:
-                "Unable to add product"
+            message: "Unable to add product"
         });
     }
 };
@@ -156,29 +156,19 @@ const addProduct = async (req, res) => {
 // ==========================================
 const updateProduct = async (req, res) => {
     try {
-
         const product =
-            await Product.findById(
-                req.params.id
-            );
-
+            await Product.findById(req.params.id);
 
         if (!product) {
-
             return res
                 .status(404)
-                .send(
-                    "Product not found"
-                );
+                .send("Product not found");
         }
-
 
         // ==================================
         // BASIC PRODUCT DETAILS
         // ==================================
-
-        product.name =
-            req.body.name;
+        product.name = req.body.name;
 
         product.price =
             Number(req.body.price);
@@ -192,113 +182,72 @@ const updateProduct = async (req, res) => {
         product.description =
             req.body.description;
 
-
-        // ==================================
-        // HERO SLIDER SETTINGS
-        // ==================================
-
         product.highlighted =
             req.body.highlighted === "on" ||
             req.body.highlighted === "true";
 
         product.sliderOrder =
-            Number(
-                req.body.sliderOrder
-            ) || 0;
-
+            Number(req.body.sliderOrder) || 0;
 
         // ==================================
         // NEW IMAGES UPLOADED
         // ==================================
-
         if (
             req.files &&
             req.files.length > 0
         ) {
-
-            // Delete old images
+            // Delete old Cloudinary images.
+            // Old local images are automatically ignored.
             if (
                 product.images &&
                 product.images.length > 0
             ) {
-
-                product.images.forEach(
-                    image => {
-
-                        const imagePath =
-                            path.join(
-                                __dirname,
-                                "../public/uploads",
-                                image
-                            );
-
-
-                        if (
-                            fs.existsSync(
-                                imagePath
-                            )
-                        ) {
-
-                            fs.unlinkSync(
-                                imagePath
-                            );
-                        }
-
+                for (const image of product.images) {
+                    try {
+                        await deleteFromCloudinary(
+                            image
+                        );
+                    } catch (error) {
+                        console.error(
+                            "Cloudinary Delete Error:",
+                            error
+                        );
                     }
+                }
+            }
+
+            const newImages = [];
+
+            for (const file of req.files) {
+                const uploaded =
+                    await uploadToCloudinary(
+                        file.buffer
+                    );
+
+                newImages.push(
+                    uploaded.url
                 );
             }
 
-
-            // Save new image names
             product.images =
-                req.files.map(
-                    file =>
-                        file.filename
-                );
+                newImages;
         }
-
-
-        // ==================================
-        // SAVE
-        // ==================================
 
         await product.save();
 
-
-        // Admin form update
-        if (
-            req.originalUrl.startsWith(
-                "/admin/"
-            )
-        ) {
-
-            return res.redirect(
-                "/admin/manage-products"
-            );
-        }
-
-
-        // API response
-        res.json({
-            success: true,
-            message:
-                "Product updated successfully",
-            product
-        });
-
+        return res.redirect(
+            "/admin/manage-products"
+        );
 
     } catch (error) {
-
         console.error(
             "Update Product Error:",
             error
         );
 
-        res.status(500).json({
-            success: false,
-            message:
-                "Unable to update product"
-        });
+        return res
+            .status(500)
+            .send("Unable to update product");
     }
 };
 

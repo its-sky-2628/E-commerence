@@ -169,7 +169,7 @@
                         <% product.images.forEach(image => { %>
 
                             <img
-                                src="/uploads/<%= image %>"
+                                src="<%= image.startsWith('http') ? image : '/uploads/' + image %>"
                                 class="w-full aspect-[3/4] object-cover rounded-lg border border-white/10"
                             >
 

@@ -18,6 +18,15 @@ const API = {
   image(filename) {
     if (!filename) return "";
 
+    // New Cloudinary images
+    if (
+      filename.startsWith("http://") ||
+      filename.startsWith("https://")
+    ) {
+      return filename;
+    }
+
+    // Old local/default images
     return `${API_URL}/uploads/${filename}`;
   }
 };

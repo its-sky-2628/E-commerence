@@ -142,7 +142,7 @@
                                             ) { %>
 
                                                 <img
-                                                    src="/uploads/<%= product.images[0] %>"
+                                                    src="<%= product.images[0].startsWith('http') ? product.images[0] : '/uploads/' + product.images[0] %>"
                                                     alt="<%= product.name %>"
                                                     class="w-full h-full object-cover"
                                                 >

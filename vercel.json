@@ -25,6 +25,13 @@
       }
     },
     {
+      "source": "/customer(/.*)?",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
+    },
+    {
       "source": "/login",
       "destination": {
         "type": "service",
@@ -40,6 +47,13 @@
     },
     {
       "source": "/uploads(/.*)?",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
+    },
+    {
+      "source": "/images(/.*)?",
       "destination": {
         "type": "service",
         "service": "backend"

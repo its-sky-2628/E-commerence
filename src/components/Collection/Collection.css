@@ -1,0 +1,183 @@
+.home-collection {
+  padding: 105px 6%;
+
+  background: #fafafa;
+}
+
+.home-collection-header {
+  max-width: 1250px;
+
+  margin: 0 auto 45px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 30px;
+}
+
+.home-collection-header span {
+  color: #b88932;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 2.5px;
+}
+
+.home-collection-header h2 {
+  margin: 9px 0 0;
+
+  color: #111;
+
+  font-size:
+    clamp(38px, 5vw, 57px);
+
+  line-height: 1.05;
+
+  letter-spacing: -2px;
+}
+
+.collection-view-all {
+  padding-bottom: 5px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #111;
+
+  text-decoration: none;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  border-bottom:
+    1px solid #111;
+
+  transition: 0.2s ease;
+}
+
+.collection-view-all:hover {
+  gap: 13px;
+
+  color: #b88932;
+
+  border-color: #b88932;
+}
+
+.home-collection-grid {
+  max-width: 1250px;
+
+  margin: auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 22px;
+}
+
+.collection-status {
+  max-width: 1250px;
+
+  min-height: 200px;
+
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  background: #fff;
+
+  border: 1px solid #eee;
+  border-radius: 18px;
+
+  color: #888;
+}
+
+.collection-status h3 {
+  margin: 0 0 7px;
+
+  color: #111;
+}
+
+.collection-status p {
+  max-width: 450px;
+
+  margin: 0;
+
+  font-size: 13px;
+
+  line-height: 1.7;
+}
+
+.collection-mobile-action {
+  display: none;
+
+  margin-top: 30px;
+
+  text-align: center;
+}
+
+.collection-mobile-action a {
+  display: inline-flex;
+
+  align-items: center;
+  gap: 8px;
+
+  padding: 14px 20px;
+
+  border-radius: 10px;
+
+  background: #111;
+  color: #fff;
+
+  text-decoration: none;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 1050px) {
+  .home-collection-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .home-collection-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .home-collection {
+    padding: 75px 18px;
+  }
+
+  .home-collection-header {
+    align-items: flex-start;
+  }
+
+  .collection-view-all {
+    display: none;
+  }
+
+  .home-collection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-mobile-action {
+    display: block;
+  }
+}

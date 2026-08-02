@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products | Fresh Fashion Admin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Navbar / Header -->
+    <nav class="bg-black text-white px-6 py-4 flex justify-between items-center shadow-md">
+        <h1 class="text-xl font-bold tracking-wide">Fresh Fashion Admin</h1>
+        <div class="space-x-4 flex items-center">
+            <!-- Website View Link -->
+            <a href="/" target="_blank" class="text-sm text-gray-300 hover:text-white transition">🌐 View Store</a>
+            <a href="/admin" class="text-sm hover:underline">Dashboard</a>
+            <a href="/admin/add-product" class="text-sm hover:underline">Add Product</a>
+            <a href="/logout" class="text-sm bg-red-600 px-3 py-1.5 rounded hover:bg-red-700">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Page Title & Add Button -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">All Products (<%= products.length %>)</h2>
+            <a href="/admin/add-product" class="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">
+                + Add New Product
+            </a>
+        </div>
+
+        <!-- Products Table Container -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <% if (products && products.length > 0) { %>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold tracking-wider">
+                                <th class="py-3 px-4">Image</th>
+                                <th class="py-3 px-4">Product Name</th>
+                                <th class="py-3 px-4">Category</th>
+                                <th class="py-3 px-4">Price</th>
+                                <th class="py-3 px-4">Discount</th>
+                                <th class="py-3 px-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 text-sm">
+                            <% products.forEach(product => { %>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <!-- Product Image -->
+                                    <td class="py-3 px-4">
+                                        <% if (product.images && product.images.length > 0) { %>
+                                            <img src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>" class="w-12 h-12 object-cover rounded-md border">
+                                        <% } else { %>
+                                            <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-500">No img</div>
+                                        <% } %>
+                                    </td>
+                                    
+                                    <!-- Product Name -->
+                                    <td class="py-3 px-4 font-medium text-gray-900"><%= product.name %></td>
+                                    
+                                    <!-- Category -->
+                                    <td class="py-3 px-4 text-gray-600 capitalize"><%= product.category %></td>
+                                    
+                                    <!-- Price -->
+                                    <td class="py-3 px-4 text-gray-900 font-semibold">₹<%= product.price %></td>
+                                    
+                                    <!-- Discount -->
+                                    <td class="py-3 px-4 text-green-600 font-medium">
+                                        <%= product.discount ? product.discount + '%' : '0%' %> off
+                                    </td>
+                                    
+                                    <!-- Actions (Delete Button) -->
+                                    <td class="py-3 px-4 text-center">
+                                        <button onclick="deleteProduct('<%= product._id %>')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-xs font-medium transition">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <p class="text-gray-500 text-base mb-3">No products found in the inventory.</p>
+                    <a href="/admin/add-product" class="text-black font-semibold hover:underline text-sm">Add your first product now</a>
+                </div>
+            <% } %>
+        </div>
+
+    </div>
+
+    <!-- JavaScript for Deleting Product via API -->
+    <script>
+        async function deleteProduct(id) {
+            if (confirm("Are you sure you want to delete this product?")) {
+                try {
+                    const response = await fetch(`/api/products/${id}`, {
+                        method: 'DELETE'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert("Failed to delete product.");
+                    }
+                } catch (err) {
+                    console.error("Error:", err);
+                    alert("Something went wrong!");
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,275 @@
+.about-page {
+  min-height: 100vh;
+
+  padding-top: 135px;
+
+  background: #fafafa;
+}
+
+.about-hero {
+  max-width: 950px;
+
+  margin: auto;
+
+  padding: 70px 25px 90px;
+
+  text-align: center;
+}
+
+.about-label {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #b88932;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+.about-hero h1 {
+  margin: 18px 0 26px;
+
+  color: #111;
+
+  font-size:
+    clamp(45px, 7vw, 76px);
+
+  line-height: 1.02;
+
+  letter-spacing: -3px;
+}
+
+.about-hero p {
+  max-width: 690px;
+
+  margin: auto;
+
+  color: #707070;
+
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.about-story {
+  max-width: 1150px;
+
+  margin: auto;
+
+  padding: 70px 35px;
+
+  display: grid;
+
+  grid-template-columns:
+    80px
+    minmax(250px, 0.8fr)
+    minmax(300px, 1fr);
+
+  gap: 40px;
+
+  background: #111;
+  color: #fff;
+
+  border-radius: 25px;
+}
+
+.about-story-number {
+  color: #666;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+.about-story span {
+  color: #b88932;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+.about-story h2 {
+  margin: 13px 0 0;
+
+  font-size:
+    clamp(30px, 4vw, 45px);
+
+  line-height: 1.08;
+
+  letter-spacing: -1.5px;
+}
+
+.about-story-copy {
+  color: #bdbdbd;
+
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.about-story-copy p {
+  margin: 0 0 17px;
+}
+
+.about-story-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.about-values {
+  max-width: 1150px;
+
+  margin: auto;
+
+  padding: 30px 0 100px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 20px;
+}
+
+.about-value-card {
+  padding: 34px;
+
+  background: #fff;
+
+  border: 1px solid #ededed;
+  border-radius: 20px;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.about-value-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow:
+    0 20px 50px
+    rgba(0, 0, 0, 0.06);
+}
+
+.about-value-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f5f1e9;
+
+  color: #b88932;
+}
+
+.about-value-card h3 {
+  margin: 21px 0 10px;
+
+  color: #111;
+
+  font-size: 18px;
+}
+
+.about-value-card p {
+  margin: 0;
+
+  color: #777;
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.about-quote {
+  padding: 100px 25px;
+
+  text-align: center;
+
+  background: #f1f1f1;
+}
+
+.about-quote span {
+  color: #b88932;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 2.5px;
+}
+
+.about-quote h2 {
+  margin: 14px 0;
+
+  color: #111;
+
+  font-size:
+    clamp(35px, 5vw, 55px);
+
+  letter-spacing: -2px;
+}
+
+.about-quote p {
+  max-width: 520px;
+
+  margin: auto;
+
+  color: #777;
+
+  line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+  .about-story {
+    margin:
+      0 20px;
+
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+  .about-story-number {
+    display: none;
+  }
+
+  .about-values {
+    padding:
+      25px 20px 75px;
+
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .about-page {
+    padding-top: 110px;
+  }
+
+  .about-hero {
+    padding:
+      55px 20px 65px;
+  }
+
+  .about-hero h1 {
+    letter-spacing: -2px;
+  }
+
+  .about-story {
+    padding: 45px 28px;
+
+    border-radius: 20px;
+  }
+
+  .about-quote {
+    padding: 75px 20px;
+  }
+}

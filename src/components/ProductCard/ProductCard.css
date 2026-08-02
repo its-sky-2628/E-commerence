@@ -1,0 +1,182 @@
+.product-card {
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  border: 1px solid #ededed;
+  border-radius: 18px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-7px);
+
+  border-color: #ddd;
+
+  box-shadow:
+    0 25px 60px
+    rgba(0, 0, 0, 0.09);
+}
+
+.product-card-image {
+  position: relative;
+
+  height: 340px;
+
+  overflow: hidden;
+
+  background: #f3f3f3;
+}
+
+.product-card-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition:
+    transform 0.55s ease;
+}
+
+.product-card:hover
+.product-card-image img {
+  transform: scale(1.045);
+}
+
+.product-card-placeholder {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #aaa;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.product-card-discount {
+  position: absolute;
+
+  top: 14px;
+  left: 14px;
+
+  padding: 7px 11px;
+
+  background: #111;
+  color: #fff;
+
+  border-radius: 30px;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+}
+
+.product-card-open {
+  position: absolute;
+
+  right: 14px;
+  bottom: 14px;
+
+  width: 43px;
+  height: 43px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.95);
+
+  color: #111;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 25px
+    rgba(0, 0, 0, 0.12);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.product-card-open:hover {
+  background: #111;
+  color: #fff;
+
+  transform: rotate(5deg);
+}
+
+.product-card-content {
+  padding: 20px;
+}
+
+.product-card-category {
+  color: #b88932;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.product-card-content h3 {
+  margin: 8px 0 13px;
+
+  color: #111;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  line-height: 1.35;
+}
+
+.product-card-price {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  flex-wrap: wrap;
+}
+
+.product-card-price strong {
+  color: #111;
+
+  font-size: 16px;
+}
+
+.product-card-price del {
+  color: #aaa;
+
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .product-card-image {
+    height: 400px;
+  }
+}

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Admin Dashboard | Fresh Fashion</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+</head>
+
+<body class="bg-slate-950 text-white min-h-screen">
+
+  <div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+
+    <aside
+      class="hidden md:flex w-64 bg-slate-900 border-r border-white/10 p-6 flex-col"
+    >
+
+      <div class="mb-10">
+        <p class="text-cyan-400 text-xs font-bold tracking-[3px]">
+          FRESH FASHION
+        </p>
+
+        <h2 class="text-xl font-black mt-2">
+          Admin Studio
+        </h2>
+      </div>
+
+
+      <nav class="space-y-2">
+
+        <a
+          href="/admin"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 text-cyan-400"
+        >
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a
+          href="/admin/add-product"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Add Product
+        </a>
+
+        <a
+          href="/admin/manage-products"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white"
+        >
+          <i class="fa-solid fa-shirt"></i>
+          Products
+        </a>
+
+        <a
+          href="/admin/messages"
+          class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white"
+        >
+          <span class="flex items-center gap-3">
+            <i class="fa-solid fa-envelope"></i>
+            Messages
+          </span>
+
+          <% if (typeof newMessages !== "undefined" && newMessages > 0) { %>
+            <span
+              class="bg-red-500 text-white text-[10px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
+            >
+              <%= newMessages %>
+            </span>
+          <% } %>
+        </a>
+
+      </nav>
+
+
+      <div class="mt-auto">
+
+        <a
+          href="/"
+          class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white"
+        >
+          <i class="fa-solid fa-store"></i>
+          Storefront
+        </a>
+
+        <a
+          href="/logout"
+          class="flex items-center gap-3 px-4 py-3 text-red-400"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Logout
+        </a>
+
+      </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="flex-1 p-5 md:p-10">
+
+      <header
+        class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-10"
+      >
+
+        <div>
+          <p class="text-gray-500 text-sm">
+            Fresh Fashion Studio
+          </p>
+
+          <h1 class="text-3xl font-black mt-1">
+            Dashboard
+          </h1>
+        </div>
+
+
+        <a
+          href="/admin/add-product"
+          class="inline-flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 px-5 py-3 rounded-xl font-bold text-sm"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Add Product
+        </a>
+
+      </header>
+
+
+      <!-- STATS -->
+
+      <section
+        class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5"
+      >
+
+        <div
+          class="bg-slate-900 border border-white/10 rounded-2xl p-6"
+        >
+          <div
+            class="w-11 h-11 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-5"
+          >
+            <i class="fa-solid fa-shirt"></i>
+          </div>
+
+          <p class="text-gray-500 text-xs uppercase font-bold">
+            Total Products
+          </p>
+
+          <h2 class="text-3xl font-black mt-2">
+            <%= typeof totalProducts !== "undefined" ? totalProducts : 0 %>
+          </h2>
+        </div>
+
+
+        <div
+          class="bg-slate-900 border border-white/10 rounded-2xl p-6"
+        >
+          <div
+            class="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mb-5"
+          >
+            <i class="fa-solid fa-person"></i>
+          </div>
+
+          <p class="text-gray-500 text-xs uppercase font-bold">
+            Men's Products
+          </p>
+
+          <h2 class="text-3xl font-black mt-2">
+            <%= typeof menProducts !== "undefined" ? menProducts : 0 %>
+          </h2>
+        </div>
+
+
+        <div
+          class="bg-slate-900 border border-white/10 rounded-2xl p-6"
+        >
+          <div
+            class="w-11 h-11 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center mb-5"
+          >
+            <i class="fa-solid fa-child-reaching"></i>
+          </div>
+
+          <p class="text-gray-500 text-xs uppercase font-bold">
+            Kids Products
+          </p>
+
+          <h2 class="text-3xl font-black mt-2">
+            <%= typeof kidsProducts !== "undefined" ? kidsProducts : 0 %>
+          </h2>
+        </div>
+
+
+        <div
+          class="bg-slate-900 border border-white/10 rounded-2xl p-6"
+        >
+          <div class="flex justify-between">
+
+            <div
+              class="w-11 h-11 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center mb-5"
+            >
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+
+            <% if (typeof newMessages !== "undefined" && newMessages > 0) { %>
+              <span class="text-xs text-red-400 font-bold">
+                <%= newMessages %> new
+              </span>
+            <% } %>
+
+          </div>
+
+          <p class="text-gray-500 text-xs uppercase font-bold">
+            Messages
+          </p>
+
+          <h2 class="text-3xl font-black mt-2">
+            <%= typeof totalMessages !== "undefined" ? totalMessages : 0 %>
+          </h2>
+        </div>
+
+      </section>
+
+
+      <!-- QUICK ACTIONS -->
+
+      <section class="mt-10">
+
+        <h2 class="font-black text-xl mb-5">
+          Quick Actions
+        </h2>
+
+        <div
+          class="grid md:grid-cols-3 gap-5"
+        >
+
+          <a
+            href="/admin/add-product"
+            class="group bg-slate-900 border border-white/10 hover:border-cyan-500/40 rounded-2xl p-6"
+          >
+            <i class="fa-solid fa-circle-plus text-cyan-400 text-2xl"></i>
+
+            <h3 class="font-bold mt-5">
+              Add New Product
+            </h3>
+
+            <p class="text-gray-500 text-sm mt-2">
+              Upload images, pricing and product details.
+            </p>
+          </a>
+
+
+          <a
+            href="/admin/manage-products"
+            class="group bg-slate-900 border border-white/10 hover:border-purple-500/40 rounded-2xl p-6"
+          >
+            <i class="fa-solid fa-boxes-stacked text-purple-400 text-2xl"></i>
+
+            <h3 class="font-bold mt-5">
+              Manage Catalogue
+            </h3>
+
+            <p class="text-gray-500 text-sm mt-2">
+              Edit or remove products from the store.
+            </p>
+          </a>
+
+
+          <a
+            href="/admin/messages"
+            class="group bg-slate-900 border border-white/10 hover:border-green-500/40 rounded-2xl p-6"
+          >
+            <i class="fa-solid fa-comments text-green-400 text-2xl"></i>
+
+            <h3 class="font-bold mt-5">
+              Customer Messages
+            </h3>
+
+            <p class="text-gray-500 text-sm mt-2">
+              View enquiries received from the website.
+            </p>
+          </a>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

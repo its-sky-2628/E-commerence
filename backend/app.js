@@ -164,8 +164,8 @@ app.post("/login", (req, res) => {
     const { email, password } = req.body;
 
     if (
-        email === "admin@freshfashion.com" &&
-        password === "Shreyansh"
+        email === "israr23071998@gmail.com" &&
+        password === "Alan@112114"
     ) {
         const token = jwt.sign(
             { email, role: "admin" },

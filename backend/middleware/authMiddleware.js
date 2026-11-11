@@ -1,54 +1,53 @@
-const jwt = require("jsonwebtoken");
+const supabase = require("../config/supabase");
 
-const authMiddleware = (req, res, next) => {
-
+const authMiddleware = async (req, res, next) => {
     try {
-
         const token = req.cookies.token;
 
         if (!token) {
-
             if (req.originalUrl.startsWith("/api/")) {
-
                 return res.status(401).json({
                     success: false,
                     message: "Admin authentication required"
                 });
             }
-
             return res.redirect("/login");
         }
 
-        const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
+        const { data: userData, error: userError } =
+            await supabase.auth.getUser(token);
 
-        if (decoded.role !== "admin") {
-
-            return res.status(403).json({
-                success: false,
-                message: "Admin access only"
-            });
+        if (userError || !userData.user) {
+            res.clearCookie("token");
+            if (req.originalUrl.startsWith("/api/")) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid or expired session"
+                });
+            }
+            return res.redirect("/login");
         }
 
-        req.admin = decoded;
+        const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", userData.user.id)
+            .maybeSingle();
+
+        if (profileError || profile?.role !== "admin") {
+            return res.status(403).send("Admin access only");
+        }
+
+        req.admin = {
+            id: userData.user.id,
+            email: userData.user.email,
+            role: profile.role
+        };
 
         next();
-
     } catch (error) {
-
-        res.clearCookie("token");
-
-        if (req.originalUrl.startsWith("/api/")) {
-
-            return res.status(401).json({
-                success: false,
-                message: "Invalid or expired token"
-            });
-        }
-
-        return res.redirect("/login");
+        console.error("Admin Auth Error:", error.message);
+        return res.status(500).send("Authentication error");
     }
 };
 

@@ -2,15 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
-const bcrypt = require("bcrypt");
-const Customer = require("./models/Customer");
 
-const connectDB = require("./config/db");
-const Product = require("./models/Product");
-const Contact = require("./models/Contact");
+const supabase = require("./config/supabase");
+const authClient = require("./config/supabaseAuth");
+const deleteFromCloudinary = require("./utils/cloudinaryDelete");
+
 
 const productRoutes = require("./routes/productRoutes");
 const contactRoutes = require("./routes/contactRoutes");
@@ -27,13 +25,19 @@ const {
     deleteMessage
 } = require("./controllers/contactController");
 
+const formatProduct = (row) => ({
+    ...row,
+    _id: row.id,
+    sliderOrder: row.slider_order,
+    createdAt: row.created_at
+});
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 
 // ==========================================
 // DATABASE
 // ==========================================
-connectDB();
 
 // ==========================================
 // MIDDLEWARE
@@ -62,11 +66,15 @@ app.set("views", path.join(__dirname, "views"));
 // ==========================================
 app.get("/", async (req, res) => {
     try {
-        const products = await Product
-            .find()
-            .sort({ createdAt: -1 })
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .order("created_at", { ascending: false })
             .limit(8);
 
+        if (error) throw error;
+
+        const products = (data || []).map(formatProduct);
         res.render("index", { products });
     } catch (error) {
         console.error(error);
@@ -78,177 +86,153 @@ app.get("/", async (req, res) => {
 // LOGIN & LOGOUT
 // ==========================================
 // ==========================================
-// CUSTOMER REGISTRATION
-// ==========================================
+
+// CUSTOMER REGISTRATION - SUPABASE AUTH
 app.post("/customer/register", async (req, res) => {
     try {
-        const {
-            username,
-            mobile,
-            age,
-            gender,
-            email,
-            password
-        } = req.body;
+        const { username, mobile, age, gender, email, password } = req.body;
 
-        if (
-            !username ||
-            !mobile ||
-            !age ||
-            !gender ||
-            !email ||
-            !password
-        ) {
-            return res
-                .status(400)
-                .send("Please fill all fields");
+        if (!username?.trim() || !mobile?.trim() || !age || !gender || !email?.trim() || !password) {
+            return res.status(400).send("Please fill all fields");
         }
 
-        const normalizedEmail =
-            email.toLowerCase().trim();
+        const normalizedEmail = email.trim().toLowerCase();
 
-        const existingCustomer =
-            await Customer.findOne({
-                email: normalizedEmail
+        const { data: created, error: createError } =
+            await supabase.auth.admin.createUser({
+                email: normalizedEmail,
+                password,
+                email_confirm: true,
+                user_metadata: { username: username.trim() }
             });
 
-        if (existingCustomer) {
-            return res
-                .status(409)
-                .send("Email already registered");
+        if (createError) {
+            if (createError.message.toLowerCase().includes("already")) {
+                return res.status(409).send("Email already registered");
+            }
+            throw createError;
         }
 
-        const hashedPassword =
-            await bcrypt.hash(password, 10);
-
-        await Customer.create({
-            username,
-            mobile,
-            age: Number(age),
-            gender,
-            email: normalizedEmail,
-            password: hashedPassword
-        });
-
-        const token = jwt.sign(
-            {
-                email: normalizedEmail,
+        const { error: profileError } = await supabase
+            .from("profiles")
+            .upsert({
+                id: created.user.id,
+                username: username.trim(),
+                mobile: mobile.trim(),
+                age: Number(age),
+                gender,
                 role: "customer"
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-        );
+            });
 
-        res.cookie("customerToken", token, {
+        if (profileError) throw profileError;
+
+        const { data: loginData, error: loginError } =
+            await authClient.auth.signInWithPassword({
+                email: normalizedEmail,
+                password
+            });
+
+        if (loginError) throw loginError;
+
+        res.cookie("customerToken", loginData.session.access_token, {
             httpOnly: true,
-            sameSite: "lax"
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: loginData.session.expires_in * 1000
         });
 
         return res.redirect("/");
     } catch (error) {
-        console.error(
-            "Customer Registration Error:",
-            error
-        );
-
-        return res
-            .status(500)
-            .send("Unable to register customer");
+        console.error("Customer Registration Error:", error.message);
+        return res.status(500).send("Unable to register customer");
     }
 });
+
+// ADMIN LOGIN - SUPABASE AUTH
 app.get("/login", (req, res) => {
     res.render("login");
 });
 
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
+app.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-    if (
-        email === "israr23071998@gmail.com" &&
-        password === "Alan@112114"
-    ) {
-        const token = jwt.sign(
-            { email, role: "admin" },
-            process.env.JWT_SECRET,
-            { expiresIn: "1d" }
-        );
+        const { data, error } = await authClient.auth.signInWithPassword({
+            email: email?.trim().toLowerCase(),
+            password
+        });
 
-        res.cookie("token", token, {
+        if (error || !data.user) {
+            return res.status(401).send("Invalid Email or Password");
+        }
+
+        const { data: profileRows, error: profileError } = await supabase
+            .from("profiles")
+            .select("id, username, role")
+            .eq("id", data.user.id);
+
+        console.log("LOGIN PROFILE ROWS:", profileRows);
+        console.log("LOGIN PROFILE ERROR:", profileError);
+
+        const profile = profileRows?.[0] || null;
+
+        if (profileError || profile?.role !== "admin") {
+            return res.status(403).send("Admin access only");
+        }
+
+        res.cookie("token", data.session.access_token, {
             httpOnly: true,
-            sameSite: "lax"
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: data.session.expires_in * 1000
         });
 
         return res.redirect("/admin");
+    } catch (error) {
+        console.error("Admin Login Error:", error.message);
+        return res.status(500).send("Unable to login");
     }
-
-    return res.status(401).send("Invalid Email or Password");
 });
 
-
-// ==========================================
-// CUSTOMER LOGIN
-// ==========================================
+// CUSTOMER LOGIN - SUPABASE AUTH
 app.post("/customer/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res
-                .status(400)
-                .send("Email and password are required");
+            return res.status(400).send("Email and password are required");
         }
 
-        const normalizedEmail =
-            email.toLowerCase().trim();
+        const { data, error } = await authClient.auth.signInWithPassword({
+            email: email.trim().toLowerCase(),
+            password
+        });
 
-        const customer =
-            await Customer.findOne({
-                email: normalizedEmail
-            });
-
-        if (!customer) {
-            return res
-                .status(401)
-                .send("Invalid Email or Password");
+        if (error || !data.user) {
+            return res.status(401).send("Invalid Email or Password");
         }
 
-        const passwordMatch =
-            await bcrypt.compare(
-                password,
-                customer.password
-            );
+        const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", data.user.id)
+            .single();
 
-        if (!passwordMatch) {
-            return res
-                .status(401)
-                .send("Invalid Email or Password");
+        if (profileError || profile?.role !== "customer") {
+            return res.status(403).send("Customer account not found");
         }
 
-        const token = jwt.sign(
-            {
-                id: customer._id,
-                email: customer.email,
-                role: "customer"
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-        );
-
-        res.cookie("customerToken", token, {
+        res.cookie("customerToken", data.session.access_token, {
             httpOnly: true,
-            sameSite: "lax"
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: data.session.expires_in * 1000
         });
 
         return res.redirect("/");
     } catch (error) {
-        console.error(
-            "Customer Login Error:",
-            error
-        );
-
-        return res
-            .status(500)
-            .send("Unable to login");
+        console.error("Customer Login Error:", error.message);
+        return res.status(500).send("Unable to login");
     }
 });
 
@@ -257,7 +241,11 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
 });
 
-// ==========================================
+app.get("/customer/logout", (req, res) => {
+    res.clearCookie("customerToken");
+    res.redirect("/");
+});
+
 // ADMIN DASHBOARD (UPDATED SINGLE ROUTE)
 // ==========================================
 app.get(
@@ -266,18 +254,24 @@ app.get(
     async (req, res) => {
         try {
             const [
-                totalProducts,
-                totalMessages,
-                newMessages,
-                menProducts,
-                kidsProducts
+                { data: productRows, error: productError },
+                { count: totalMessagesCount, error: contactsError },
+                { count: newMessagesCount, error: newMessagesError }
             ] = await Promise.all([
-                Product.countDocuments(),
-                Contact.countDocuments(),
-                Contact.countDocuments({ status: "new" }),
-                Product.countDocuments({ category: "Men" }),
-                Product.countDocuments({ category: "Kids" })
+                supabase.from("products").select("category"),
+                supabase.from("contacts").select("id", { count: "exact", head: true }),
+                supabase.from("contacts").select("id", { count: "exact", head: true }).eq("status", "new")
             ]);
+
+            if (productError) throw productError;
+            if (contactsError) throw contactsError;
+            if (newMessagesError) throw newMessagesError;
+
+            const totalProducts = productRows.length;
+            const totalMessages = totalMessagesCount || 0;
+            const newMessages = newMessagesCount || 0;
+            const menProducts = productRows.filter(p => p.category === "Men").length;
+            const kidsProducts = productRows.filter(p => p.category === "Kids").length;
 
             res.render("admin", {
                 totalProducts,
@@ -327,10 +321,14 @@ app.get(
     authMiddleware,
     async (req, res) => {
         try {
-            const products = await Product
-                .find()
-                .sort({ createdAt: -1 });
+            const { data, error } = await supabase
+                .from("products")
+                .select("*")
+                .order("created_at", { ascending: false });
 
+            if (error) throw error;
+
+            const products = (data || []).map(formatProduct);
             res.render("manage-products", { products });
         } catch (error) {
             console.error(error);
@@ -355,13 +353,21 @@ app.get(
     authMiddleware,
     async (req, res) => {
         try {
-            const product = await Product.findById(req.params.id);
+            const { data, error } = await supabase
+                .from("products")
+                .select("*")
+                .eq("id", req.params.id)
+                .maybeSingle();
 
-            if (!product) {
+            if (error) throw error;
+
+            if (!data) {
                 return res.status(404).send("Product not found");
             }
 
-            res.render("edit-product", { product });
+            res.render("edit-product", {
+                product: formatProduct(data)
+            });
         } catch (error) {
             console.error(error);
             res.status(500).send("Unable to load product");
@@ -381,23 +387,38 @@ app.post(
 // ==========================================
 const deleteProductHandler = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        const { data: product, error: findError } = await supabase
+            .from("products")
+            .select("*")
+            .eq("id", req.params.id)
+            .maybeSingle();
 
-        if (product) {
-            if (product.images && product.images.length > 0) {
-                product.images.forEach(image => {
-                    const imagePath = path.join(__dirname, "public/uploads", image);
-                    if (fs.existsSync(imagePath)) {
-                        fs.unlinkSync(imagePath);
-                    }
-                });
-            }
-            await product.deleteOne();
+        if (findError) throw findError;
+
+        if (!product) {
+            return res.status(404).send("Product not found");
         }
+
+        for (const image of product.images || []) {
+            if (image.startsWith("http")) {
+                try {
+                    await deleteFromCloudinary(image);
+                } catch (imageError) {
+                    console.error("Cloudinary Delete Error:", imageError);
+                }
+            }
+        }
+
+        const { error } = await supabase
+            .from("products")
+            .delete()
+            .eq("id", req.params.id);
+
+        if (error) throw error;
 
         res.redirect("/admin/manage-products");
     } catch (error) {
-        console.error(error);
+        console.error("Delete Product Error:", error);
         res.status(500).send("Unable to delete product");
     }
 };

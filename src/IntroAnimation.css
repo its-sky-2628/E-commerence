@@ -1,0 +1,234 @@
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  overflow: hidden;
+  background: #fff;
+}
+
+.intro-half {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  flex: 0 0 50%;
+  background: #fff;
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.intro-half img {
+  position: absolute;
+  top: 0;
+  width: 200%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+}
+
+.intro-left img {
+  left: 0;
+}
+
+.intro-right img {
+  right: 0;
+}
+
+.intro-opening .intro-left {
+  transform: translateX(-100%);
+}
+
+.intro-opening .intro-right {
+  transform: translateX(100%);
+}
+
+/* Intro typography in the white spaces */
+.intro-label {
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #171717;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+
+.intro-brand {
+  left: 2%;
+  width: 28%;
+  font-size: clamp(17px, 2.2vw, 34px);
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+}
+
+.intro-owner {
+  right: 2%;
+  width: 28%;
+  font-size: clamp(16px, 2vw, 30px);
+  line-height: 1.45;
+  letter-spacing: 0.12em;
+}
+
+@media (max-width: 600px) {
+  .intro-brand {
+    left: 0;
+    width: 25%;
+    font-size: clamp(10px, 3vw, 16px);
+    letter-spacing: 0;
+  }
+
+  .intro-owner {
+    right: 0;
+    width: 25%;
+    font-size: clamp(10px, 3vw, 16px);
+    letter-spacing: 0;
+  }
+}
+
+/* PREMIUM FASHION EDITORIAL INTRO */
+
+.intro-label {
+  color: #171717;
+  pointer-events: none;
+}
+
+.intro-brand {
+  left: 1%;
+  width: 32%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.brand-eyebrow {
+  font-family: Arial, sans-serif;
+  font-size: clamp(7px, 0.65vw, 10px);
+  letter-spacing: 0.32em;
+  font-weight: 600;
+  color: #9a7950;
+  margin-bottom: 14px;
+}
+
+.brand-fresh {
+  font-family: Arial, sans-serif;
+  font-size: clamp(17px, 2.2vw, 34px);
+  font-weight: 300;
+  letter-spacing: 0.32em;
+}
+
+.brand-fashion {
+  font-family: "Bodoni 72", "Didot", Georgia, serif;
+  font-size: clamp(27px, 3.8vw, 58px);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+}
+
+.brand-point {
+  font-family: "Bodoni 72", "Didot", Georgia, serif;
+  font-size: clamp(23px, 3vw, 44px);
+  letter-spacing: 0.12em;
+  font-weight: 400;
+}
+
+.brand-dot {
+  color: #b18a54;
+}
+
+.brand-line {
+  width: 42px;
+  height: 1px;
+  background: #b18a54;
+  margin: 19px 0 10px;
+}
+
+.brand-tagline {
+  font-family: Arial, sans-serif;
+  font-size: clamp(6px, 0.58vw, 9px);
+  letter-spacing: 0.2em;
+  color: #777;
+}
+
+.intro-owner {
+  right: 1%;
+  width: 32%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.owner-line {
+  width: 35px;
+  height: 1px;
+  background: #b18a54;
+}
+
+.owner-letters {
+  font-family: "Bodoni 72", "Didot", Georgia, serif;
+  font-size: clamp(19px, 2.4vw, 36px);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+
+.owner-caption {
+  font-family: Arial, sans-serif;
+  font-size: clamp(6px, 0.58vw, 9px);
+  letter-spacing: 0.22em;
+  color: #9a7950;
+  writing-mode: vertical-rl;
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .intro-brand {
+    left: 0;
+    width: 32%;
+  }
+
+  .brand-eyebrow {
+    font-size: 6px;
+    letter-spacing: 0.12em;
+  }
+
+  .brand-fresh {
+    font-size: 15px;
+    letter-spacing: 0.12em;
+  }
+
+  .brand-fashion {
+    font-size: clamp(19px, 5vw, 27px);
+  }
+
+  .brand-point {
+    font-size: 19px;
+  }
+
+  .brand-tagline {
+    font-size: 5px;
+    letter-spacing: 0.08em;
+  }
+
+  .intro-owner {
+    right: 0;
+    width: 32%;
+  }
+
+  .owner-letters {
+    font-size: 20px;
+  }
+
+  .owner-caption {
+    font-size: 6px;
+  }
+}

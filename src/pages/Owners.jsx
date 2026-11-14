@@ -50,7 +50,7 @@ function OwnersPage() {
         <span className="owners-kicker">OUR WHY</span>
         <h2>It Started With A <em>Dream.</em></h2>
         <p>
-          We started Fresh Fashion Point with a simple belief:
+          We started Fresh Fashion Studio with a simple belief:
           everyone deserves to look good, feel confident and express
           their own style.
         </p>
@@ -61,11 +61,11 @@ function OwnersPage() {
         </p>
         <blockquote>
           “Our journey is driven by passion, built on trust, and inspired
-          by every person who becomes a part of Fresh Fashion Point.”
+          by every person who becomes a part of Fresh Fashion Studio.”
         </blockquote>
         <div className="owners-signoff">WITH STYLE & GRATITUDE</div>
         <h3>Israr Ansari <span>&</span> Irfan Ansari</h3>
-        <span className="owners-brand-name">FRESH FASHION POINT</span>
+        <span className="owners-brand-name">FRESH FASHION STUDIO</span>
       </section>
     </main>
   );

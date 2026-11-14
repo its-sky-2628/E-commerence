@@ -31,10 +31,10 @@ function IntroAnimation({ onComplete }) {
     <div className={`intro-screen ${stage === "owners" ? "show-owners" : "show-welcome"} ${opening ? "intro-opening" : ""}`}>
       <section className="welcome-stage">
         <div className="welcome-content">
-          <img src="/CompanyLogo.png" alt="Fresh Fashion Point Logo" />
+          <img src="/CompanyLogo.png" alt="Fresh Fashion Studio Logo" />
           <span className="welcome-eyebrow">WELCOME TO</span>
           <h1>FRESH FASHION</h1>
-          <span className="welcome-subtitle">POINT</span>
+          <span className="welcome-subtitle">STUDIO</span>
           <div className="welcome-line" />
           <p>STYLE THAT DEFINES YOU</p>
         </div>

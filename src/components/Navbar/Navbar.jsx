@@ -81,7 +81,7 @@ function Navbar() {
             Fresh Fashion
           </h2>
 
-          <span>Point</span>
+          <span>Studio</span>
         </div>
       </Link>
 

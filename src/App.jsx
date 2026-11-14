@@ -6,46 +6,60 @@ import CollectionPage from "./pages/Collection";
 import ProductDetails from "./pages/ProductDetails";
 import AboutPage from "./pages/About";
 import ContactPage from "./pages/Contact";
+import OwnersPage from "./pages/Owners";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 import "./IntroAnimation.css";
 
 function IntroAnimation({ onComplete }) {
+  const [stage, setStage] = useState("welcome");
   const [opening, setOpening] = useState(false);
 
   useEffect(() => {
-    const start = setTimeout(() => setOpening(true), 1400);
-    const finish = setTimeout(onComplete, 2700);
+    const ownersTimer = setTimeout(() => setStage("owners"), 2400);
+    const openingTimer = setTimeout(() => setOpening(true), 5600);
+    const finishTimer = setTimeout(onComplete, 7000);
 
     return () => {
-      clearTimeout(start);
-      clearTimeout(finish);
+      clearTimeout(ownersTimer);
+      clearTimeout(openingTimer);
+      clearTimeout(finishTimer);
     };
   }, [onComplete]);
 
   return (
-    <div className={`intro-screen ${opening ? "intro-opening" : ""}`}>
-      <div className="intro-label intro-brand">
-        <span className="brand-eyebrow">THE STYLE DESTINATION</span>
-        <span className="brand-fresh">FRESH</span>
-        <span className="brand-fashion">FASHION</span>
-        <span className="brand-point">POINT<span className="brand-dot">.</span></span>
-        <span className="brand-line"></span>
-        <span className="brand-tagline">STYLE THAT DEFINES YOU</span>
-      </div>
+    <div className={`intro-screen ${stage === "owners" ? "show-owners" : "show-welcome"} ${opening ? "intro-opening" : ""}`}>
+      <section className="welcome-stage">
+        <div className="welcome-content">
+          <img src="/CompanyLogo.png" alt="Fresh Fashion Point Logo" />
+          <span className="welcome-eyebrow">WELCOME TO</span>
+          <h1>FRESH FASHION</h1>
+          <span className="welcome-subtitle">POINT</span>
+          <div className="welcome-line" />
+          <p>STYLE THAT DEFINES YOU</p>
+        </div>
+      </section>
 
-      <div className="intro-label intro-owner">
-        <span className="owner-line"></span>
-        <span className="owner-letters">O<br />W<br />N<br />E<br />R</span>
-        <span className="owner-caption">THE VISIONARY</span>
-      </div>
+      <section className="owners-stage">
+        <div className="owners-heading">
+          <span>THE PEOPLE BEHIND THE STYLE</span>
+          <h2>MEET OUR OWNERS</h2>
+        </div>
 
-      <div className="intro-half intro-left">
-        <img src="/Front.jpeg" alt="Fresh Fashion" />
-      </div>
-      <div className="intro-half intro-right">
-        <img src="/Front.jpeg" alt="Fresh Fashion" />
-      </div>
+        <div className="owners-panels">
+          <div className="owner-panel owner-first">
+            <img src="/Owner.jpeg" alt="First owner" />
+            <span className="owner-tag">OWNER</span>
+          </div>
+
+          <div className="owner-panel owner-second">
+            <img src="/Front.jpeg" alt="Second owner" />
+            <span className="owner-tag">OWNER</span>
+          </div>
+        </div>
+
+        <p className="owners-footer">A VISION FOR STYLE. A PASSION FOR FASHION.</p>
+      </section>
     </div>
   );
 }
@@ -58,6 +72,7 @@ function App() {
       {showIntro && (
         <IntroAnimation onComplete={() => setShowIntro(false)} />
       )}
+
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
@@ -66,6 +81,7 @@ function App() {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/owners" element={<OwnersPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

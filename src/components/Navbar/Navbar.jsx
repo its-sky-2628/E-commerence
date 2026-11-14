@@ -156,6 +156,19 @@ function Navbar() {
         <li>
           <Link
             className={
+              active("/owners")
+                ? "current"
+                : ""
+            }
+            to="/owners"
+          >
+            Owners
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            className={
               active("/contact")
                 ? "current"
                 : ""

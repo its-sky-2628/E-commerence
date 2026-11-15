@@ -3,13 +3,13 @@ import "./Owners.css";
 const owners = [
   {
     name: "Israr Ansari",
-    role: "CO-FOUNDER",
+    role: "OWNER",
     image: "/Owner.png",
     number: "01",
   },
   {
     name: "Irfan Ansari",
-    role: "CO-FOUNDER",
+    role: "CO-OWNER",
     image: "/Front.jpeg",
     number: "02",
   },

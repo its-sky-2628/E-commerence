@@ -4,7 +4,7 @@ const owners = [
   {
     name: "Israr Ansari",
     role: "CO-FOUNDER",
-    image: "/Owner.jpeg",
+    image: "/Owner.png",
     number: "01",
   },
   {

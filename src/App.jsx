@@ -54,7 +54,7 @@ function IntroAnimation({ onComplete }) {
 
           <div className="owner-panel owner-second">
             <img src="/Front.jpeg" alt="Second owner" />
-            <span className="owner-tag">OWNER</span>
+            <span className="owner-tag">CO-OWNER</span>
           </div>
         </div>
 
